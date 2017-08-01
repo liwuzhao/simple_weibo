@@ -1,5 +1,7 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
+  before_save   :downcase_email
+  before_create :create_activation_digest
 
   before_save { self.email = email.downcase }
 
@@ -44,6 +46,19 @@ class User < ApplicationRecord
   # 忘记用户
   def forget
     update_attribute(:remember_digest, nil)
-  end  
+  end
+
+  private
+
+    # 把电子邮件地址转换成小写
+    def downcase_email
+      self.email.downcase!
+    end
+
+    # 创建并赋值激活令牌和摘要
+    def create_activation_digest
+      self.activation_token  = User.new_token
+      self.activation_digest = User.digest(activation_token)
+    end
 
 end
