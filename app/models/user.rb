@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+
+  has_many :microposts, dependent: :destroy
+
+  #用户系统
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save   :downcase_email
   before_create :create_activation_digest
@@ -75,6 +79,11 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago #密码重设邮件已经发出超过两小时
   end
 
+  # 实现动态流原型
+  def feed
+    Micropost.where("user_id = ?", id)
+  end
+  
   private
 
     # 把电子邮件地址转换成小写
