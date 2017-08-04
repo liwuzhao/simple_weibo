@@ -3,11 +3,17 @@ class User < ApplicationRecord
   #微博
   has_many :microposts, dependent: :destroy
 
-  # user 关注的用户 following
+  #我关注的人
   has_many :active_relationships, class_name:  "Relationship",
                                   foreign_key: "follower_id",
                                   dependent:   :destroy
   has_many :following, through: :active_relationships, source: :followed
+
+  #关注我的人
+  has_many :passive_relationships,  class_name:  "Relationship",
+                                    foreign_key: "followed_id",
+                                    dependent:   :destroy
+  has_many :followers, through: :passive_relationships, source: :follower
 
   # 关注另一个用户
   def follow(other_user)
